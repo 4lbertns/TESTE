@@ -1,7 +1,7 @@
 // ==========================================
 // CONFIGURAÇÕES DE LOGIN (Mock Frontend)
 // ==========================================
-const USER_EMAIL = "admin@email.com";
+const USER_EMAIL = "4lbert.ns@gmail.com";
 const USER_PASS = "senha123";
 
 // Elementos da DOM
