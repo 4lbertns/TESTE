@@ -1,66 +1,217 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minha Planilha Financeira</title>
+    <title>Nexus Finance | Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Tela de Login -->
-    <div id="login-section" class="container">
-        <div class="login-box">
-            <h2>Acesso Restrito</h2>
+    <div id="toast-container"></div>
+
+    <!-- TELA DE LOGIN -->
+    <div id="login-section" class="auth-wrapper">
+        <div class="glass-panel login-box">
+            <div class="logo">
+                <i class="fa-solid fa-layer-group"></i>
+                <h2>Nexus Pro</h2>
+            </div>
+            <p class="subtitle">Autenticação Segura</p>
             <form id="login-form">
                 <div class="input-group">
-                    <label for="email">E-mail</label>
-                    <input type="email" id="email" placeholder="seu@email.com" required>
+                    <i class="fa-regular fa-envelope"></i>
+                    <input type="email" id="email" placeholder="E-mail" required>
                 </div>
                 <div class="input-group">
-                    <label for="password">Senha</label>
-                    <input type="password" id="password" placeholder="Sua senha secreta" required>
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="password" placeholder="Senha" required>
                 </div>
-                <button type="submit">Entrar</button>
-                <p id="login-error" class="error-msg"></p>
+                <button type="submit" class="btn-primary">Entrar no Dashboard</button>
             </form>
         </div>
     </div>
 
-    <!-- Interface da Planilha (Oculta por padrão) -->
-    <div id="app-section" class="container hidden">
-        <header>
-            <h2>Planilha de Gastos</h2>
-            <button id="logout-btn" class="btn-secondary">Sair</button>
-        </header>
+    <!-- DASHBOARD -->
+    <div id="app-section" class="app-wrapper hidden">
         
-        <div class="add-expense-bar">
-            <input type="date" id="exp-date" required>
-            <input type="text" id="exp-desc" placeholder="Descrição do gasto" required>
-            <input type="number" id="exp-amount" placeholder="Valor (R$)" step="0.01" required>
-            <button id="add-btn">Adicionar</button>
-        </div>
+        <!-- Sidebar -->
+        <aside class="sidebar glass-panel">
+            <div class="logo">
+                <i class="fa-solid fa-layer-group"></i>
+                <h2>Nexus</h2>
+            </div>
+            <nav>
+                <a href="#" class="active"><i class="fa-solid fa-chart-line"></i> Visão Geral</a>
+                <a href="#" id="export-csv"><i class="fa-solid fa-download"></i> Exportar Dados</a>
+                <a href="#" id="clear-data"><i class="fa-solid fa-triangle-exclamation"></i> Resetar Sistema</a>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="logout-btn" class="btn-outline"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</button>
+            </div>
+        </aside>
 
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Data</th>
-                        <th>Descrição</th>
-                        <th>Valor (R$)</th>
-                        <th>Ação</th>
-                    </tr>
-                </thead>
-                <tbody id="expense-list"></tbody>
-            </table>
-        </div>
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <header class="topbar glass-panel">
+                <div class="header-titles">
+                    <h1>Dashboard Financeiro</h1>
+                    <span id="current-date" class="text-muted"></span>
+                </div>
+                <div class="header-actions">
+                    <button id="theme-toggle" class="icon-btn" title="Alternar Tema">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+                    <div class="user-profile">
+                        <div class="avatar"><i class="fa-solid fa-user-tie"></i></div>
+                        <div class="user-info">
+                            <span class="user-name">Albert Lucas</span>
+                            <span class="user-role">Administrador</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
 
-        <div class="total-bar">
-            <h3>Gasto Total: <span id="total-amount">R$ 0,00</span></h3>
-        </div>
+            <!-- Cards Resumo -->
+            <div class="kpi-grid">
+                <div class="kpi-card glass-panel">
+                    <div class="kpi-header">
+                        <span>Receita Mensal</span>
+                        <div class="icon-box success"><i class="fa-solid fa-arrow-up"></i></div>
+                    </div>
+                    <h2 id="total-income">R$ 0,00</h2>
+                </div>
+                <div class="kpi-card glass-panel">
+                    <div class="kpi-header">
+                        <span>Despesa Mensal</span>
+                        <div class="icon-box danger"><i class="fa-solid fa-arrow-down"></i></div>
+                    </div>
+                    <h2 id="total-expense">R$ 0,00</h2>
+                </div>
+                <div class="kpi-card glass-panel highlight">
+                    <div class="kpi-header">
+                        <span>Saldo Total</span>
+                        <div class="icon-box primary"><i class="fa-solid fa-wallet"></i></div>
+                    </div>
+                    <h2 id="total-balance">R$ 0,00</h2>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                
+                <!-- Área Esquerda: Formulário e Metas -->
+                <div class="left-column">
+                    <!-- Painel de Inserção -->
+                    <div class="glass-panel form-panel">
+                        <div class="panel-header">
+                            <h3><i class="fa-solid fa-bolt"></i> Nova Transação</h3>
+                        </div>
+                        <div class="form-grid">
+                            <div class="input-box">
+                                <label>Descrição</label>
+                                <input type="text" id="desc" placeholder="Ex: Salário, Mercado..." required>
+                            </div>
+                            <div class="input-box">
+                                <label>Valor (R$)</label>
+                                <input type="number" id="amount" placeholder="0.00" step="0.01" required>
+                            </div>
+                            <div class="input-box">
+                                <label>Tipo</label>
+                                <select id="type">
+                                    <option value="expense">Despesa (Saída)</option>
+                                    <option value="income">Receita (Entrada)</option>
+                                </select>
+                            </div>
+                            <div class="input-box">
+                                <label>Categoria</label>
+                                <select id="category">
+                                    <option value="Alimentação & Dieta">Alimentação & Dieta</option>
+                                    <option value="Moradia & Contas">Moradia & Contas</option>
+                                    <option value="Educação (Uninassau)">Educação (Uninassau)</option>
+                                    <option value="Assinaturas (Streaming)">Assinaturas (Streaming)</option>
+                                    <option value="Lazer (Saídas c/ Joyce)">Lazer</option>
+                                    <option value="Transporte">Transporte</option>
+                                    <option value="Renda / Salário">Renda / Salário</option>
+                                    <option value="Outros">Outros</option>
+                                </select>
+                            </div>
+                            <div class="input-box">
+                                <label>Data</label>
+                                <input type="date" id="date" required>
+                            </div>
+                            <div class="input-box" style="display: flex; align-items: flex-end;">
+                                <button id="add-btn" class="btn-primary full-width">Registrar</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Metas Financeiras -->
+                    <div class="glass-panel goals-panel">
+                        <div class="panel-header">
+                            <h3><i class="fa-solid fa-bullseye"></i> Metas em Andamento</h3>
+                        </div>
+                        <div id="goals-container" class="goals-list">
+                            <!-- Injetado via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Área Direita: Gráficos e Tabela -->
+                <div class="right-column">
+                    
+                    <!-- Gráficos -->
+                    <div class="charts-grid">
+                        <div class="glass-panel chart-box">
+                            <h3>Fluxo de Caixa</h3>
+                            <div class="canvas-container">
+                                <canvas id="barChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="glass-panel chart-box">
+                            <h3>Despesas por Categoria</h3>
+                            <div class="canvas-container">
+                                <canvas id="doughnutChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabela com Filtros -->
+                    <div class="glass-panel table-panel">
+                        <div class="panel-header flex-between">
+                            <h3><i class="fa-solid fa-list-ul"></i> Histórico de Transações</h3>
+                            <div class="filters">
+                                <input type="text" id="filter-text" placeholder="Buscar...">
+                                <select id="filter-month">
+                                    <option value="all">Todos os Meses</option>
+                                    <!-- Options geradas via JS -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Descrição</th>
+                                        <th>Categoria</th>
+                                        <th>Valor</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transaction-list"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
     </div>
 
-    <!-- Referência corrigida para o seu arquivo -->
     <script src="arq.js"></script>
 </body>
 </html>
