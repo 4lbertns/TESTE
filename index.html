@@ -36,7 +36,7 @@
         
         <div class="add-expense-bar">
             <input type="date" id="exp-date" required>
-            <input type="text" id="exp-desc" placeholder="Descrição do gasto (ex: Mercado)" required>
+            <input type="text" id="exp-desc" placeholder="Descrição do gasto" required>
             <input type="number" id="exp-amount" placeholder="Valor (R$)" step="0.01" required>
             <button id="add-btn">Adicionar</button>
         </div>
@@ -51,9 +51,7 @@
                         <th>Ação</th>
                     </tr>
                 </thead>
-                <tbody id="expense-list">
-                    <!-- Linhas adicionadas pelo JavaScript aparecerão aqui -->
-                </tbody>
+                <tbody id="expense-list"></tbody>
             </table>
         </div>
 
@@ -62,6 +60,7 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Referência corrigida para o seu arquivo -->
+    <script src="arq.js"></script>
 </body>
 </html>
